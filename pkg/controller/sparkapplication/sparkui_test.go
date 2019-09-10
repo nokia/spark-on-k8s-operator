@@ -141,55 +141,55 @@ func TestCreateSparkUIService(t *testing.T) {
 			SparkApplicationID: "foo-3",
 		},
 	}
-	app4 := &v1beta1.SparkApplication{
+	app4 := &v1beta2.SparkApplication{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 			UID:       "foo-123",
 		},
-		Spec: v1beta1.SparkApplicationSpec{
+		Spec: v1beta2.SparkApplicationSpec{
 			SparkConf: map[string]string{
 				sparkTLSUIPortConfigurationKey: "4441",
 				sparkSSLUIEnabled:              "true",
 			},
 			TlsSecret: "tls-secret",
 		},
-		Status: v1beta1.SparkApplicationStatus{
+		Status: v1beta2.SparkApplicationStatus{
 			SparkApplicationID: "foo-4",
 			ExecutionAttempts:  4,
 		},
 	}
-	app5 := &v1beta1.SparkApplication{
+	app5 := &v1beta2.SparkApplication{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 			UID:       "foo-123",
 		},
-		Spec: v1beta1.SparkApplicationSpec{
+		Spec: v1beta2.SparkApplicationSpec{
 			SparkConf: map[string]string{
 				sparkSSLUIEnabled: "true",
 			},
 			TlsSecret: "tls-secret",
 		},
-		Status: v1beta1.SparkApplicationStatus{
+		Status: v1beta2.SparkApplicationStatus{
 			SparkApplicationID: "foo-5",
 			ExecutionAttempts:  5,
 		},
 	}
-	app6 := &v1beta1.SparkApplication{
+	app6 := &v1beta2.SparkApplication{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 			UID:       "foo-123",
 		},
-		Spec: v1beta1.SparkApplicationSpec{
+		Spec: v1beta2.SparkApplicationSpec{
 			SparkConf: map[string]string{
 				sparkTLSUIPortConfigurationKey: "4441x",
 				sparkSSLUIEnabled:              "true",
 			},
 			TlsSecret: "tls-secret",
 		},
-		Status: v1beta1.SparkApplicationStatus{
+		Status: v1beta2.SparkApplicationStatus{
 			SparkApplicationID: "foo-6",
 		},
 	}
@@ -270,37 +270,37 @@ func TestCreateSparkUIIngress(t *testing.T) {
 }
 
 func TestCreateSparkUIIngressBasedOnSvcPort(t *testing.T) {
-	var app *v1beta1.SparkApplication
+	var app *v1beta2.SparkApplication
 	if svcPort == 4041 {
-		app = &v1beta1.SparkApplication{
+		app = &v1beta2.SparkApplication{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "foo",
 				Namespace: "default",
 				UID:       "foo-123",
 			},
-			Status: v1beta1.SparkApplicationStatus{
+			Status: v1beta2.SparkApplicationStatus{
 				SparkApplicationID: "foo-1",
-				DriverInfo: v1beta1.DriverInfo{
+				DriverInfo: v1beta2.DriverInfo{
 					WebUIServiceName: "blah-service",
 				},
 			},
 		}
 	} else {
-		app = &v1beta1.SparkApplication{
+		app = &v1beta2.SparkApplication{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "foo",
 				Namespace: "default",
 				UID:       "foo-123",
 			},
-			Spec: v1beta1.SparkApplicationSpec{
+			Spec: v1beta2.SparkApplicationSpec{
 				SparkConf: map[string]string{
 					"spark.ssl.ui.enabled": "true",
 				},
 				TlsSecret: "tls-secret",
 			},
-			Status: v1beta1.SparkApplicationStatus{
+			Status: v1beta2.SparkApplicationStatus{
 				SparkApplicationID: "foo-1",
-				DriverInfo: v1beta1.DriverInfo{
+				DriverInfo: v1beta2.DriverInfo{
 					WebUIServiceName: "blah-service",
 				},
 			},
