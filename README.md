@@ -87,6 +87,7 @@ The Kubernetes Operator for Apache Spark currently supports the following list o
 
 Nokia CSF Contributions
 * Support for SSL enabled driver UI (https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/issues/490)
+* Copy hadoop-site xmls present in hadoopConfigMap to operator pod and export HADOOP_CONF_DIR during spark-submit (https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/issues/572)
   
 ## Contributing
 
