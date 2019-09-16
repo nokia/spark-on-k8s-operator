@@ -416,6 +416,8 @@ func (c *Controller) handleSparkApplicationDeletion(app *v1beta1.SparkApplicatio
 	// SparkApplication deletion requested, lets delete driver pod.
 	if err := c.deleteSparkResources(app); err != nil {
 		glog.Errorf("failed to delete resources associated with deleted SparkApplication %s/%s: %v", app.Namespace, app.Name, err)
+		// SparkApplication deletion requested, lets delete directory where hadoopConfigMap site xmls were copied.
+		config.RemoveDirectory(app.Namespace, app.Name)
 	}
 }
 
@@ -609,7 +611,7 @@ func (c *Controller) submitSparkApplication(app *v1beta1.SparkApplication) *v1be
 
 	driverPodName := getDriverPodName(app)
 	submissionID := uuid.New().String()
-	submissionCmdArgs, err := buildSubmissionCommandArgs(app, driverPodName, submissionID)
+	exportEnvVars, submissionCmdArgs, err := buildSubmissionCommandArgs(app, driverPodName, submissionID)
 	if err != nil {
 		app.Status = v1beta1.SparkApplicationStatus{
 			AppState: v1beta1.ApplicationState{
@@ -634,7 +636,7 @@ func (c *Controller) submitSparkApplication(app *v1beta1.SparkApplication) *v1be
 	}
 
 	// Try submitting the application by running spark-submit.
-	submitted, err := runSparkSubmit(newSubmission(submissionCmdArgs, app))
+	submitted, err := runSparkSubmit(exportEnvVars, newSubmission(submissionCmdArgs, app))
 	if err != nil {
 		app.Status = v1beta1.SparkApplicationStatus{
 			AppState: v1beta1.ApplicationState{
@@ -861,6 +863,7 @@ func (c *Controller) recordSparkApplicationEvent(app *v1beta1.SparkApplication) 
 			"SparkApplication %s was submitted successfully",
 			app.Name)
 	case v1beta1.FailedSubmissionState:
+		config.RemoveDirectory(app.Namespace, app.Name)
 		c.recorder.Eventf(
 			app,
 			apiv1.EventTypeWarning,
@@ -869,6 +872,7 @@ func (c *Controller) recordSparkApplicationEvent(app *v1beta1.SparkApplication) 
 			app.Name,
 			app.Status.AppState.ErrorMessage)
 	case v1beta1.CompletedState:
+		config.RemoveDirectory(app.Namespace, app.Name)
 		c.recorder.Eventf(
 			app,
 			apiv1.EventTypeNormal,
@@ -876,6 +880,7 @@ func (c *Controller) recordSparkApplicationEvent(app *v1beta1.SparkApplication) 
 			"SparkApplication %s completed",
 			app.Name)
 	case v1beta1.FailedState:
+		config.RemoveDirectory(app.Namespace, app.Name)
 		c.recorder.Eventf(
 			app,
 			apiv1.EventTypeWarning,
@@ -884,6 +889,7 @@ func (c *Controller) recordSparkApplicationEvent(app *v1beta1.SparkApplication) 
 			app.Name,
 			app.Status.AppState.ErrorMessage)
 	case v1beta1.PendingRerunState:
+		config.RemoveDirectory(app.Namespace, app.Name)
 		c.recorder.Eventf(
 			app,
 			apiv1.EventTypeWarning,
