@@ -63,7 +63,7 @@ func GetPrometheusConfigMapName(app *v1beta2.SparkApplication) string {
 }
 
 // GetK8sConfigMap gets the cmName configmap in app.Namespace and returns the configMapPath
-func GetK8sConfigMap(app *v1beta1.SparkApplication, cmName string) (string, error) {
+func GetK8sConfigMap(app *v1beta2.SparkApplication, cmName string) (string, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		glog.Errorf("%v", err)
