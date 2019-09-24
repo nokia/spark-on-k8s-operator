@@ -32,6 +32,7 @@ FROM ${SPARK_IMAGE}
 COPY --from=builder /usr/bin/spark-operator /usr/bin/
 RUN apk add --no-cache openssl curl tini
 COPY hack/gencerts.sh /usr/bin/
+RUN chmod 770 /mnt
 
 COPY entrypoint.sh /usr/bin/
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
