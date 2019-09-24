@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const configDir = "/config/"
+const mntDir = "/mnt/"
 
 type getCm struct {
 	configMap *v1.ConfigMap
@@ -26,7 +26,7 @@ func (gc getCm) copyResourceToFile(appNamespace string, appName string, cmName s
 	var returnedpath string
 	var filesInConfigMap []string
 	for key := range gc.configMap.Data {
-		pathVal := configDir + appNamespace + "/" + appName + "/" + cmName
+		pathVal := mntDir + appNamespace + "/" + appName + "/" + cmName
 		err := os.MkdirAll(pathVal, 0770)
 		if err != nil {
 			glog.Errorf("%v", err)
@@ -56,7 +56,7 @@ func (gs getSecret) copyResourceToFile(appNamespace string, appName string, secr
 	var returnedpath string
 	var filesInSecret []string
 	for key := range gs.secret.Data {
-		pathVal := configDir + appNamespace + "/" + appName + "/" + secretName
+		pathVal := mntDir + appNamespace + "/" + appName + "/" + secretName
 		err := os.MkdirAll(pathVal, 0770)
 		if err != nil {
 			glog.Errorf("%v", err)
@@ -93,7 +93,7 @@ func copyToFile(d dynamicCopy, appNamespace string, appName string, resourceName
 
 // RemoveDirectory removes the directory where configmaps and secrets are dynamically copied
 func RemoveDirectory(appNamespace string, appName string) {
-	var dirToRemove = configDir + appNamespace + "/" + appName
+	var dirToRemove = mntDir + appNamespace + "/" + appName
 	err := os.RemoveAll(dirToRemove)
 	if err != nil {
 		glog.Errorf("%v", err)
