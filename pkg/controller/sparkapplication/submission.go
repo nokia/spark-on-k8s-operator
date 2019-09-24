@@ -17,6 +17,7 @@ limitations under the License.
 package sparkapplication
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -149,6 +150,51 @@ func buildSubmissionCommandArgs(app *v1beta2.SparkApplication, driverPodName str
 		}
 		// Setting HADOOP_CONF_DIR
 		exportenv = append(exportenv, fmt.Sprintf("export HADOOP_CONF_DIR=%s;", hadoopConfLoc))
+	}
+
+	if app.Spec.Kerberos.KerberosEnabled != nil && *app.Spec.Kerberos.KerberosEnabled {
+		if app.Spec.Kerberos.KerberosPrincipal == nil || app.Spec.Kerberos.KeytabSecret == nil || app.Spec.Kerberos.KeytabName == nil || ((app.Spec.Kerberos.Krb5ConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] == "")) || ((app.Spec.HadoopConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "")) {
+			glog.Errorf("ERROR!! Following fields must be specified when .spec.kerberos.enabled is true :\n .spec.kerberos.kerberosPrincipal\n .spec.kerberos.keytabSecret\n .spec.kerberos.keytabName\n .spec.kerberos.krb5ConfigMap Or .spec.sparkConf[\"spark.kubernetes.kerberos.krb5.configMapName\"] \n .spec.hadoopConfigMap Or .spec.sparkConf[\"spark.kubernetes.hadoop.configMapName\"]")
+			glog.Errorf("Please make sure all the mandatory kerberos fields are specified with proper values")
+			err := errors.New("One or more parameters missing when .spec.kerberos.enabled is set to true")
+			return nil, nil, err
+		} else {
+			// Appending kerberos principal parameter and value to spark-submit argument
+			args = append(args, "--conf", fmt.Sprintf("%s=%s", config.KerberosPrincipal, *app.Spec.Kerberos.KerberosPrincipal))
+
+			// Appending kerberos keytab parameter and value to spark-submit argument
+			keytabPath, err := config.GetK8sSecret(app, *app.Spec.Kerberos.KeytabSecret)
+			if err == nil {
+				keytabkeyLoc := keytabPath + "/" + *app.Spec.Kerberos.KeytabName
+				args = append(args, "--conf", fmt.Sprintf("%s=%s", config.KerberosKeytab, keytabkeyLoc))
+			} else {
+				return nil, nil, err
+			}
+			if app.Spec.Kerberos.Krb5ConfigMap != nil {
+				// Appending kerberos krb5 conf's loaction parameter and value to spark-submit argument
+				var krb5keyLoc string
+				krb5Path, err := config.GetK8sConfigMap(app, *app.Spec.Kerberos.Krb5ConfigMap)
+				if err == nil {
+					krb5keyLoc = krb5Path + "/krb5.conf"
+					args = append(args, "--conf", fmt.Sprintf("%s=%s", config.KerberosKrb5Conf, krb5keyLoc))
+					// Setting SPARK_SUBMIT_OPTS
+					exportenv = append(exportenv, fmt.Sprintf("export SPARK_SUBMIT_OPTS=\"-Djava.security.krb5.conf=%s\";", krb5keyLoc))
+				} else {
+					return nil, nil, err
+				}
+			} else if app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] != "" {
+				//&& app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "" {
+				var krb5keyLoc string
+				krb5Path, err := config.GetK8sConfigMap(app, app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"])
+				if err == nil {
+					krb5keyLoc = krb5Path + "/krb5.conf"
+					// Setting SPARK_SUBMIT_OPTS
+					exportenv = append(exportenv, fmt.Sprintf("export SPARK_SUBMIT_OPTS=\"-Djava.security.krb5.conf=%s\";", krb5keyLoc))
+				} else {
+					return nil, nil, err
+				}
+			}
+		}
 	}
 
 	// Add Spark configuration properties.

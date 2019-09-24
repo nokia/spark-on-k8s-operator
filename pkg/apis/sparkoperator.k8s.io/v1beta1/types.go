@@ -90,6 +90,15 @@ const (
 	ConcurrencyReplace ConcurrencyPolicy = "Replace"
 )
 
+// Kerberos type describes the kerberos related fields keytab (kubernetes secret) and kdc details (kubernetes configmap)
+type Kerberos struct {
+	KerberosEnabled   *bool   `json:"enabled,omitempty"`
+	KerberosPrincipal *string `json:"kerberosPrincipal,omitempty"`
+	KeytabSecret      *string `json:"keytabSecret,omitempty"`
+	KeytabName        *string `json:"keytabName,omitempty"`
+	Krb5ConfigMap     *string `json:"krb5ConfigMap,omitempty"`
+}
+
 type ScheduledSparkApplicationSpec struct {
 	// Schedule is a cron schedule on which the application should run.
 	Schedule string `json:"schedule"`
@@ -206,6 +215,10 @@ type SparkApplicationSpec struct {
 	// The controller will add environment variable HADOOP_CONF_DIR to the path where the ConfigMap is mounted to.
 	// Optional.
 	HadoopConfigMap *string `json:"hadoopConfigMap,omitempty"`
+	// Kerberos contains the keytab secret and krb5 configmap name.
+	// Required when spark job is kerberos enabled
+	// Optional.
+	Kerberos Kerberos `json:"kerberos,omitempty"`
 	// Secret name containing server certificate and private key used to enable TLS/SSL on Driver UI.
 	// Optional.
 	TlsSecret string `json:"tlsSecret,omitempty"`
