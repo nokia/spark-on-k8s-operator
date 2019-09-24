@@ -20,6 +20,11 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/golang/glog"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	res "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/rest"
+
 	"github.com/GoogleCloudPlatform/spark-on-k8s-operator/pkg/apis/sparkoperator.k8s.io/v1beta1"
 )
 
@@ -71,4 +76,37 @@ func GetExecutorSecretConfOptions(app *v1beta1.SparkApplication) []string {
 		}
 	}
 	return secretConfOptions
+}
+
+// GetK8sSecret gets the secretName secret in app.Namespace and returns the secretPath
+func GetK8sSecret(app *v1beta1.SparkApplication, secretName string) (string, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		glog.Errorf("%v", err)
+		return "", err
+	}
+
+	clientset, err := res.NewForConfig(config)
+	if err != nil {
+		glog.Errorf("%v", err)
+		return "", err
+	}
+
+	secretsInNamespace := clientset.Secrets(app.Namespace)
+	userProvidedSecret, err := secretsInNamespace.Get(secretName, metav1.GetOptions{})
+
+	if err != nil {
+		glog.Errorf("%v", err)
+		return "", err
+	}
+
+	secretFound := getSecret{secret: userProvidedSecret}
+
+	secretPath, err := copyToFile(secretFound, app.Namespace, app.Name, secretName)
+	if err != nil {
+		glog.Errorf("%v", err)
+		return "", err
+	}
+
+	return secretPath, nil
 }
