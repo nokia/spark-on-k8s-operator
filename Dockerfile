@@ -34,6 +34,7 @@ RUN apt-get update \
     && apt-get install -y openssl curl tini \
     && rm -rf /var/lib/apt/lists/*
 COPY hack/gencerts.sh /usr/bin/
+RUN chmod 770 /mnt
 
 COPY entrypoint.sh /usr/bin/
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]

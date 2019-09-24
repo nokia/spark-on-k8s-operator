@@ -25,7 +25,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	res "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
-
 )
 
 // GetDriverSecretConfOptions returns a list of spark-submit options for mounting driver secrets.
@@ -79,7 +78,7 @@ func GetExecutorSecretConfOptions(app *v1beta2.SparkApplication) []string {
 }
 
 // GetK8sSecret gets the secretName secret in app.Namespace and returns the secretPath
-func GetK8sSecret(app *v1beta1.SparkApplication, secretName string) (string, error) {
+func GetK8sSecret(app *v1beta2.SparkApplication, secretName string) (string, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		glog.Errorf("%v", err)
