@@ -28,7 +28,7 @@ before_install:
   # Make the binary executable
   - chmod +x $GOPATH/bin/dep
   # Allow creation of directory under /
-  - chmod 770 /
+  - chmod 770 /*
 
 install:
   - dep ensure
