@@ -27,6 +27,11 @@ before_install:
   - curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
   # Make the binary executable
   - chmod +x $GOPATH/bin/dep
+<<<<<<< HEAD
+=======
+  # Allow creation of directory under /
+  - chmod 770 /*
+>>>>>>> ad455b4e5665dee0f56a1a434a775c03dc20151b
 
 install:
   - dep ensure
