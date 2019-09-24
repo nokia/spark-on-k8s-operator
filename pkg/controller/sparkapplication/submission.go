@@ -243,7 +243,7 @@ func buildSubmissionCommandArgs(app *v1beta2.SparkApplication, driverPodName str
 	if app.Spec.Volumes != nil {
 		options, err = addLocalDirConfOptions(app)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		for _, option := range options {
