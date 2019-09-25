@@ -156,8 +156,16 @@ func buildSubmissionCommandArgs(app *v1beta1.SparkApplication, driverPodName str
 	}
 
 	if app.Spec.Kerberos.KerberosEnabled != nil && *app.Spec.Kerberos.KerberosEnabled {
-		if app.Spec.Kerberos.KerberosPrincipal == nil || app.Spec.Kerberos.KeytabSecret == nil || app.Spec.Kerberos.KeytabName == nil || ((app.Spec.Kerberos.Krb5ConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] == "")) || ((app.Spec.HadoopConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "")) {
-			glog.Errorf("ERROR!! Following fields must be specified when .spec.kerberos.enabled is true :\n .spec.kerberos.kerberosPrincipal\n .spec.kerberos.keytabSecret\n .spec.kerberos.keytabName\n .spec.kerberos.krb5ConfigMap Or .spec.sparkConf[\"spark.kubernetes.kerberos.krb5.configMapName\"] \n .spec.hadoopConfigMap Or .spec.sparkConf[\"spark.kubernetes.hadoop.configMapName\"]")
+		if app.Spec.Kerberos.KerberosPrincipal == nil ||
+			app.Spec.Kerberos.KeytabSecret == nil || app.Spec.Kerberos.KeytabName == nil ||
+			((app.Spec.Kerberos.Krb5ConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] == "")) || ((app.Spec.HadoopConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "")) {
+			glog.Errorf(`ERROR!! Following fields must be specified when .spec.kerberos.enabled is true :
+ .spec.kerberos.kerberosPrincipal
+ .spec.kerberos.keytabSecret
+ .spec.kerberos.keytabName
+ .spec.kerberos.krb5ConfigMap Or .spec.sparkConf["spark.kubernetes.kerberos.krb5.configMapName"]
+ .spec.hadoopConfigMap Or .spec.sparkConf["spark.kubernetes.hadoop.configMapName"]`)
+
 			glog.Errorf("Please make sure all the mandatory kerberos fields are specified with proper values")
 			err := errors.New("One or more parameters missing when .spec.kerberos.enabled is set to true")
 			return nil, nil, err
@@ -186,7 +194,6 @@ func buildSubmissionCommandArgs(app *v1beta1.SparkApplication, driverPodName str
 					return nil, nil, err
 				}
 			} else if app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] != "" {
-				//&& app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "" {
 				var krb5keyLoc string
 				krb5Path, err := config.GetK8sConfigMap(app, app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"])
 				if err == nil {
