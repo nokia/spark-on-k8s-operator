@@ -158,7 +158,8 @@ func buildSubmissionCommandArgs(app *v1beta1.SparkApplication, driverPodName str
 	if app.Spec.Kerberos.KerberosEnabled != nil && *app.Spec.Kerberos.KerberosEnabled {
 		if app.Spec.Kerberos.KerberosPrincipal == nil ||
 			app.Spec.Kerberos.KeytabSecret == nil || app.Spec.Kerberos.KeytabName == nil ||
-			((app.Spec.Kerberos.Krb5ConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] == "")) || ((app.Spec.HadoopConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "")) {
+			((app.Spec.Kerberos.Krb5ConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] == "")) ||
+			((app.Spec.HadoopConfigMap == nil) && (app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "")) {
 			glog.Errorf(`ERROR!! Following fields must be specified when .spec.kerberos.enabled is true :
  .spec.kerberos.kerberosPrincipal
  .spec.kerberos.keytabSecret

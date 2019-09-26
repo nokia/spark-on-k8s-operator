@@ -606,11 +606,11 @@ Following are the two sample ways for submitting Kerberos job :-
 ```
 
 Following fields are mandatory when `.spec.kerberos.enabled` is true :-
-1. .spec.kerberos.kerberosPrincipal
-2. .spec.kerberos.keytabSecret
-3. .spec.kerberos.keytabName
-4. .spec.kerberos.krb5ConfigMap Or .spec.sparkConf["spark.kubernetes.kerberos.krb5.configMapName"]
-5. .spec.hadoopConfigMap Or .spec.sparkConf["spark.kubernetes.hadoop.configMapName"]
+* `.spec.kerberos.kerberosPrincipal`
+* `.spec.kerberos.keytabSecret`
+* `.spec.kerberos.keytabName`
+* `.spec.kerberos.krb5ConfigMap` Or `.spec.sparkConf["spark.kubernetes.kerberos.krb5.configMapName"]`
+* `.spec.hadoopConfigMap` Or `.spec.sparkConf["spark.kubernetes.hadoop.configMapName"]`
 
 Different sparkapplications can use same or different CDLK and KDC. Also, Upon Completion, Failure, Deletion of sparkapplication, the keytab, krb5.conf and hadoop site xmls are deleted from the operator pod. 
 
