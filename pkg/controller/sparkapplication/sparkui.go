@@ -163,7 +163,11 @@ func createSparkUIService(
 // getWebUITargetPort attempts to get the Spark web UI port from configuration property spark.ui.port
 // in Spec.SparkConf if it is present, otherwise the default port is returned.
 // Note that we don't attempt to get the port from Spec.SparkConfigMap.
+<<<<<<< HEAD
 func getUITargetPort(app *v1beta2.SparkApplication) string {
+=======
+func getUITargetPort(app *v1beta1.SparkApplication) string {
+>>>>>>> f9dc67e2da73a2193b3deaebb57ad6d5376eea89
 	var (
 		sparkUIPortConfigurationKey = "spark.ui.port"
 		defaultSparkWebUIPort       = "4040"
