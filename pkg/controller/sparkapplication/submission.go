@@ -183,7 +183,6 @@ func buildSubmissionCommandArgs(app *v1beta2.SparkApplication, driverPodName str
 					return nil, nil, err
 				}
 			} else if app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"] != "" {
-				//&& app.Spec.SparkConf["spark.kubernetes.hadoop.configMapName"] == "" {
 				var krb5keyLoc string
 				krb5Path, err := config.GetK8sConfigMap(app, app.Spec.SparkConf["spark.kubernetes.kerberos.krb5.configMapName"])
 				if err == nil {
