@@ -141,6 +141,8 @@ const (
 	KerberosKeytab = "spark.kerberos.keytab"
 	//KDC krb5.conf parameter
 	KerberosKrb5Conf = "spark.kubernetes.kerberos.krb5.path"
+	// SparkExecutorDeleteOnTermination is the Spark configuration for specifying whether executor pods should be deleted in case of failure or normal termination
+	SparkExecutorDeleteOnTermination = "spark.kubernetes.executor.deleteOnTermination"
 )
 
 const (
