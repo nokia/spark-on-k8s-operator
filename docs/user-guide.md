@@ -32,6 +32,7 @@ The Kubernetes Operator for Apache Spark ships with a command-line tool called `
     * [Using Volume For Scratch Space](#using-volume-for-scratch-space)
     * [Using Termination Grace Period](#using-termination-grace-period)
     * [Using Container LifeCycle Hooks](#using-container-lifecycle-hooks)
+    * [Using Volume For Scratch Space](#using-volume-for-scratch-space)
     * [Python Support](#python-support)
     * [Monitoring](#monitoring)
 * [Working with SparkApplications](#working-with-sparkapplications)
@@ -501,6 +502,10 @@ The scratch directory defaults to `/tmp` of the container.
 If that storage isn't enough or you want to use a specific path, you can use one or more volumes.
 The volume names should start with `spark-local-dir-`.
 
+### Using Volume For Scratch Space
+By default, Spark uses temporary scratch space to spill data to disk during shuffles and other operations.
+In order to use volume, volume's name should starts with `spark-local-dir-`.
+
 
 ```
 spec:
@@ -542,6 +547,7 @@ spec:
         - name: "spark-local-dir-1"
           mountPath: "/tmp/dir1"
         - name: "spark-local-dir-2"
+        - name: "spark-local-dir-1"
           mountPath: "/tmp/dir2"
       ...
 ```
@@ -586,6 +592,8 @@ spec:
 ```
 In cases like Spark Streaming or Spark Structured Streaming applications, you can test if a file exists to start a graceful shutdown and stop all streaming queries manually.
 
+
+#### Use Persistent Volume
 
 ### Python Support
 

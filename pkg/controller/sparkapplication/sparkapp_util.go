@@ -143,3 +143,16 @@ func getSvcAnnotations(app *v1beta2.SparkApplication) map[string]string {
 	}
 	return annotations
 }
+
+func getVolumeFSType(v v1.Volume) (policy.FSType, error) {
+	switch {
+	case v.HostPath != nil:
+		return policy.HostPath, nil
+	case v.EmptyDir != nil:
+		return policy.EmptyDir, nil
+	case v.PersistentVolumeClaim != nil:
+		return policy.PersistentVolumeClaim, nil
+	}
+
+	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
+}
