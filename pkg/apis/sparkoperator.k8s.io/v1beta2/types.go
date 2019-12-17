@@ -200,6 +200,10 @@ type SparkApplicationSpec struct {
 	// driver, executor, or init-container takes precedence over this.
 	// +optional
 	Image *string `json:"image,omitempty"`
+	// InitContainerImage is the image of the init-container to use. Overrides Spec.Image if set.
+	// +optional
+	// +deprecated
+	InitContainerImage *string `json:"initContainerImage,omitempty"`
 	// ImagePullPolicy is the image pull policy for the driver, executor, and init-container.
 	// +optional
 	ImagePullPolicy *string `json:"imagePullPolicy,omitempty"`
@@ -383,6 +387,26 @@ type Dependencies struct {
 	// PyFiles is a list of Python files the Spark application depends on.
 	// +optional
 	PyFiles []string `json:"pyFiles,omitempty"`
+	// JarsDownloadDir is the location to download jars to in the driver and executors.
+	// +optional
+	// +deprecated
+	JarsDownloadDir *string `json:"jarsDownloadDir,omitempty"`
+	// FilesDownloadDir is the location to download files to in the driver and executors.
+	// +optional
+	// +deprecated
+	FilesDownloadDir *string `json:"filesDownloadDir,omitempty"`
+	// DownloadTimeout specifies the timeout in seconds before aborting the attempt to download
+	// and unpack dependencies from remote locations into the driver and executor pods.
+	// +optional
+	// +deprecated
+	// +kubebuilder:validation:Minimum=1
+	DownloadTimeout *int32 `json:"downloadTimeout,omitempty"`
+	// MaxSimultaneousDownloads specifies the maximum number of remote dependencies to download
+	// simultaneously in a driver or executor pod.
+	// +optional
+	// +deprecated
+	// +kubebuilder:validation:Minimum=1
+	MaxSimultaneousDownloads *int32 `json:"maxSimultaneousDownloads,omitempty"`
 }
 
 // SparkPodSpec defines common things that can be customized for a Spark driver or executor pod.
@@ -584,6 +608,7 @@ type PrometheusSpec struct {
 	// JmxExporterJar is the path to the Prometheus JMX exporter jar in the container.
 	JmxExporterJar string `json:"jmxExporterJar"`
 	// Port is the port of the HTTP server run by the Prometheus JMX exporter.
+	// +optional
 	// If not specified, 8090 will be used as the default.
 	// +kubebuilder:validation:Minimum=1024
 	// +kubebuilder:validation:Maximum=49151
@@ -594,6 +619,7 @@ type PrometheusSpec struct {
 	// +optional
 	ConfigFile *string `json:"configFile,omitempty"`
 	// Configuration is the content of the Prometheus configuration needed by the Prometheus JMX exporter.
+	// +optional
 	// If not specified, the content in spark-docker/conf/prometheus.yaml will be used.
 	// Configuration has no effect if ConfigFile is set.
 	// +optional
