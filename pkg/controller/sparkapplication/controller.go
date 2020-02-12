@@ -623,7 +623,7 @@ func (c *Controller) submitSparkApplication(app *v1beta2.SparkApplication) *v1be
 	v1beta2.SetSparkApplicationDefaults(app)
 
 	if app.PrometheusMonitoringEnabled() {
-		if err := configPrometheusMonitoring(appCopy, c.kubeClient); err != nil {
+		if err := configPrometheusMonitoring(app, c.kubeClient); err != nil {
 			glog.Error(err)
 		}
 	}
@@ -635,6 +635,8 @@ func (c *Controller) submitSparkApplication(app *v1beta2.SparkApplication) *v1be
 			glog.Errorf("failed to process batch scheduler BeforeSubmitSparkApplication with error %v", err)
 			return app
 		}
+		//Spark submit will use the updated app to submit tasks(Spec will not be updated into API server)
+		app = newApp
 	}
 
 	driverPodName := getDriverPodName(app)
