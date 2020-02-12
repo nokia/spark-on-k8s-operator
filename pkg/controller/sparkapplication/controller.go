@@ -623,7 +623,7 @@ func (c *Controller) submitSparkApplication(app *v1beta2.SparkApplication) *v1be
 	v1beta2.SetSparkApplicationDefaults(app)
 
 	if app.PrometheusMonitoringEnabled() {
-		if err := configPrometheusMonitoring(app, c.kubeClient); err != nil {
+		if err := configPrometheusMonitoring(appCopy, c.kubeClient); err != nil {
 			glog.Error(err)
 		}
 	}
